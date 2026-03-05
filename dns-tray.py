@@ -4,10 +4,13 @@ import sys
 import subprocess
 import os
 import json
+import signal
+import ipaddress
 from functools import partial
 from PyQt6.QtWidgets import QApplication, QSystemTrayIcon, QMenu
 from PyQt6.QtGui import QIcon, QAction, QCursor
 from PyQt6.QtCore import QTimer
+from PyQt6.QtNetwork import QLocalServer, QLocalSocket
 
 
 DIR = os.path.dirname(os.path.realpath(__file__))
@@ -15,11 +18,7 @@ JSON = os.path.join(DIR, "dns-providers.json")
 DNS_SWITCH = os.path.join(DIR, "bin", "dns-switch")
 DNS_CURRENT = os.path.join(DIR, "bin", "dns-current")
 ICONS = os.path.join(DIR, "icons")
-
-
-
-import subprocess
-import ipaddress
+APP_ID = "kde_quick_dns_switcher"
 
 
 def get_current_dns():
@@ -28,7 +27,8 @@ def get_current_dns():
     try:
         output = subprocess.check_output(
             ["nmcli", "-t", "-f", "NAME,DEVICE", "connection", "show", "--active"],
-            encoding="utf-8", errors="ignore"
+            encoding="utf-8",
+            errors="ignore"
         ).strip().splitlines()
 
         for line in output:
@@ -45,7 +45,8 @@ def get_current_dns():
             try:
                 raw_ipv4 = subprocess.check_output(
                     ["nmcli", "-g", "ipv4.dns", "connection", "show", name],
-                    encoding="utf-8", errors="ignore"
+                    encoding="utf-8",
+                    errors="ignore"
                 ).strip()
                 ipv4_dns = [ip.strip() for ip in raw_ipv4.split(",") if ip.strip()]
             except subprocess.CalledProcessError:
@@ -55,7 +56,8 @@ def get_current_dns():
             try:
                 raw_ipv6 = subprocess.check_output(
                     ["nmcli", "-g", "ipv6.dns", "connection", "show", name],
-                    encoding="utf-8", errors="ignore"
+                    encoding="utf-8",
+                    errors="ignore"
                 ).strip()
                 ipv6_dns = [ip.replace("\\:", ":").strip() for ip in raw_ipv6.split(",") if ip.strip()]
             except subprocess.CalledProcessError:
@@ -78,7 +80,53 @@ def get_current_dns():
 
 
 def set_dns(v4, v6):
-    subprocess.Popen([DNS_SWITCH, v4, v6])
+    connections = get_active_connections_with_dns()
+
+    for name, device, current_v4, current_v6 in connections:
+
+        # Normalizar formato (nmcli devuelve con comas)
+        current_v4 = current_v4.replace(",", " ").strip()
+        current_v6 = current_v6.replace(",", " ").strip()
+
+        # Si ya está configurado igual, no hacemos nada
+        if current_v4 == (v4 or "") and current_v6 == (v6 or ""):
+            continue
+
+        # IPv4
+        if v4:
+            subprocess.run(
+                ["nmcli", "connection", "modify", name, "ipv4.ignore-auto-dns", "yes", "ipv4.dns", v4],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+        else:
+            subprocess.run(
+                ["nmcli", "connection", "modify", name, "ipv4.ignore-auto-dns", "no", "ipv4.dns", ""],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+
+        # IPv6
+        if v6:
+            subprocess.run(
+                ["nmcli", "connection", "modify", name, "ipv6.ignore-auto-dns", "yes", "ipv6.dns", v6],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+        else:
+            subprocess.run(
+                ["nmcli", "connection", "modify", name, "ipv6.ignore-auto-dns", "no", "ipv6.dns", ""],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL
+            )
+
+        subprocess.run(
+            ["nmcli", "device", "reapply", device],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL
+        )
+
+    # Actualizar estado del tray tras aplicar cambios
     QTimer.singleShot(1200, update_state)
 
 
@@ -88,9 +136,9 @@ def get_active_connections_with_dns():
     """
     conns_info = []
     try:
-        output = subprocess.check_output([
-            "nmcli", "-t", "-f", "NAME,DEVICE", "connection", "show", "--active"
-        ]).decode().strip().splitlines()
+        output = subprocess.check_output(
+            ["nmcli", "-t", "-f", "NAME,DEVICE", "connection", "show", "--active"]
+        ).decode().strip().splitlines()
 
         for line in output:
             if not line:
@@ -138,8 +186,7 @@ def detect_active_provider(current_dns, active_conns):
 
 
 def update_state():
-    # Obtener DNS actual como lista de IPv4 e IPv6
-    current_dns = get_current_dns()  # tu función devuelve "IP1 IP2 ... IPn"
+    current_dns = get_current_dns()
     active_conns = get_active_connections_with_dns()
     manual = is_manual_dns(active_conns)
     active = detect_active_provider(current_dns, active_conns)
@@ -163,30 +210,6 @@ def update_state():
         else:
             action.setText(name)
 
-    # Format IPs 
-    ipv4_list = []
-    ipv6_list = []
-    for ip in current_dns.split():
-        try:
-            import ipaddress
-            if ipaddress.ip_address(ip).version == 4:
-                ipv4_list.append(ip)
-            else:
-                ipv6_list.append(ip)
-        except ValueError:
-            continue
-
-    display_ipv4 = ", ".join(ipv4_list) if ipv4_list else "–"
-    display_ipv6 = ", ".join(ipv6_list) if ipv6_list else "–"
-
-    # Tooltip con IPv4 e IPv6 en líneas separadas
-    tooltip_text = (
-        f"Quick DNS switcher\n"
-        f"Active: {active}\n"
-        f"IPv4:\n{display_ipv4}\n"
-        f"IPv6:\n{display_ipv6}"
-    )
-
     if current_dns:
         ipv4_list = []
         ipv6_list = []
@@ -200,8 +223,8 @@ def update_state():
             except ValueError:
                 continue
 
-        display_ipv4 = ", ".join(ipv4_list) if ipv4_list else "–"
-        display_ipv6 = ", ".join(ipv6_list) if ipv6_list else "–"
+        display_ipv4 = "   |   ".join(ipv4_list) if ipv4_list else "–"
+        display_ipv6 = "   |   ".join(ipv6_list) if ipv6_list else "–"
         tooltip_text = (
             f"Quick DNS switcher\n"
             f"{active}\n"
@@ -210,9 +233,9 @@ def update_state():
         )
     else:
         tooltip_text = (
-        f"Quick DNS switcher\n"
-        f"{active}"
-    )
+            f"Quick DNS switcher\n"
+            f"{active}"
+        )
 
     tray.setToolTip(tooltip_text)
 
@@ -222,6 +245,40 @@ def make_set_dns_action(v4, v6):
     def handler(checked=False):
         set_dns(v4, v6)
     return handler
+
+
+def ensure_single_instance():
+    socket = QLocalSocket()
+    socket.connectToServer(APP_ID)
+
+    # Si conecta → ya hay una instancia corriendo
+    if socket.waitForConnected(500):
+        socket.close()
+
+        # Intentamos matar la instancia anterior
+        pid_file = "/tmp/kde_quick_dns_switcher.pid"
+        if os.path.exists(pid_file):
+            try:
+                with open(pid_file, "r") as f:
+                    old_pid = int(f.read().strip())
+                os.kill(old_pid, signal.SIGTERM)
+            except Exception:
+                pass
+
+    # Crear servidor local
+    server = QLocalServer()
+    try:
+        server.removeServer(APP_ID)
+    except Exception:
+        pass
+
+    server.listen(APP_ID)
+
+    # Guardar PID actual
+    with open("/tmp/kde_quick_dns_switcher.pid", "w") as f:
+        f.write(str(os.getpid()))
+
+    return server
 
 
 def open_config():
@@ -246,6 +303,7 @@ else:
 
 # Menu
 app = QApplication(sys.argv)
+app.server = ensure_single_instance()
 tray = QSystemTrayIcon()
 menu = QMenu()
 actions = {}

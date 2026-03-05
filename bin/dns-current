@@ -1,6 +1,0 @@
-#!/bin/bash
-nmcli -t -f IP4.DNS,IP6.DNS device show \
-| grep DNS \
-| cut -d: -f2 \
-| sort -u \
-| tr '\n' ' '
