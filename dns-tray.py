@@ -1,4 +1,5 @@
-#!/usr/bin/env python3
+# !/usr/bin/python3
+# -*- coding: utf-8 -*-
 
 import sys
 import subprocess
@@ -6,12 +7,12 @@ import os
 import json
 import signal
 import ipaddress
+from qt.qt_network_monitor import QtNetworkMonitor
 from PyQt6.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QMessageBox
 from PyQt6.QtGui import QIcon, QAction
-from PyQt6.QtCore import QTimer
 from PyQt6.QtNetwork import QLocalServer, QLocalSocket
 from PyQt6.QtDBus import QDBusConnection
-from PyQt6.QtCore import QObject, pyqtSlot
+from PyQt6.QtCore import QObject, QTimer, pyqtSlot
 
 
 ###############################################################################
@@ -33,46 +34,7 @@ DEFAULT_MODE_ICON = "network-server"
 ###############################################################################
 
 
-class NetworkMonitor(QObject):
-    def __init__(self):
-        super().__init__()
-        self.timer = QTimer()
-        self.timer.setSingleShot(True)
-        self.timer.timeout.connect(update_state)
-
-    @pyqtSlot(int)
-    def properties_changed(self, state):
-        self.timer.start(500)
-
-
 # region Functions
-
-def display_error_dialog(content):
-    QMessageBox.critical(None, DIALOG_ERROR_TITLE, content)
-
-
-def load_dns_providers():
-    if not os.path.exists(CONFIG_FILE):
-        display_error_dialog(f"DNS configuration file not found:\n\n{CONFIG_FILE}")
-        sys.exit(1)
-    try:
-        with open(CONFIG_FILE, "r") as f:
-            return json.load(f)
-    except json.JSONDecodeError as e:
-        display_error_dialog(f"Invalid JSON format in DNS configuration file:\n\n{CONFIG_FILE}\n\n{e}")
-        sys.exit(1)
-    except Exception as e:
-        display_error_dialog(f"Unexpected error loading DNS configuration file:\n\n{e}")
-        sys.exit(1)
-
-
-def execute_command(args, output=True, raise_error=True):
-    try:
-        return subprocess.run(args, capture_output=output, text=True, check=raise_error)
-    except subprocess.CalledProcessError as e:
-        display_error_dialog(f"Error executing command:\n\n{' '.join(args)}\n\n{e}")
-        sys.exit(1)
-
 
 def get_provider_dns(provider):
     ipv4 = [ip for ip in [provider.get("ipv4_1"), provider.get("ipv4_2")] if ip]
@@ -175,7 +137,7 @@ def detect_active_provider(current_dns):
 
 def monitor_network_changes():
     global nm_monitor
-    nm_monitor = NetworkMonitor()
+    nm_monitor = QtNetworkMonitor()
     bus = QDBusConnection.systemBus()
     bus.connect(
         "org.freedesktop.NetworkManager",
@@ -240,30 +202,6 @@ def make_set_dns_action(ipv4_list, ipv6_list):
     def handler(checked=False):
         set_dns(ipv4_list, ipv6_list)
     return handler
-
-
-def ensure_single_instance():
-    socket = QLocalSocket()
-    socket.connectToServer(APP_ID)
-    if socket.waitForConnected(500):
-        socket.close()
-        pid_file = "/tmp/kde_quick_dns_switcher.pid"
-        if os.path.exists(pid_file):
-            try:
-                with open(pid_file, "r") as f:
-                    old_pid = int(f.read().strip())
-                os.kill(old_pid, signal.SIGTERM)
-            except Exception:
-                pass
-    server = QLocalServer()
-    try:
-        server.removeServer(APP_ID)
-    except Exception:
-        pass
-    server.listen(APP_ID)
-    with open("/tmp/kde_quick_dns_switcher.pid", "w") as f:
-        f.write(str(os.getpid()))
-    return server
 
 
 def open_config():
