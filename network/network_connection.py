@@ -1,7 +1,8 @@
-# !/usr/bin/python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from ip_pair import IpPair
+from typing import Optional
+from network.ip_pair import IpPair
 
 
 class NetworkConnection:

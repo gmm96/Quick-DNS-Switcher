@@ -1,11 +1,11 @@
-# !/usr/bin/python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import os
 import json
-from typing import List
-from dns_provider import DnsProvider
-from ..utils.utils import display_error_dialog
+from typing import List, Optional
+from network.dns_provider import DnsProvider
+from utils.tools import display_error_dialog
 
 
 class DnsConfiguration:
@@ -16,16 +16,16 @@ class DnsConfiguration:
 
     def _load(self) -> None:
         if not os.path.exists(self.file_path):
-            display_error_dialog(f"DNS configuration file not found:\n\n{CONFIG_FILE}")
+            display_error_dialog(f"DNS configuration file not found:\n\n{self.file_path}")
             sys.exit(1)
         try:
             with open(self.file_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
         except json.JSONDecodeError as e:
-            display_error_dialog(f"Invalid JSON format in DNS configuration file:\n\n{CONFIG_FILE}\n\n{e}")
+            display_error_dialog(f"Invalid JSON format in DNS configuration file:\n\n{self.file_path}\n\n{e}")
             sys.exit(1)
         except Exception as e:
-            display_error_dialog(f"Unexpected error loading DNS configuration file:\n\n{e}")
+            display_error_dialog(f"Unexpected error loading DNS configuration file:\n\n{self.file_path}\n\n{e}")
             sys.exit(1)
         self.providers = [DnsProvider.from_dict(name, details) for name, details in data.items()]
 

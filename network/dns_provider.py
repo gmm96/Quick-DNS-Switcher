@@ -1,16 +1,16 @@
-# !/usr/bin/python3
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from typing import Optional, Dict
-from ip_pair import IpPair
+from network.ip_pair import IpPair
 
 
 class DnsProvider:
-    def __init__(self, name: str, ipv4: Optional[IpPair], ipv6: Optional[IpPair], icon: Optional[str]) -> None:
-        self.name = name
-        self.ipv4 = ipv4
-        self.ipv6 = ipv6
-        self.icon = icon
+    def __init__(self, name: str, ipv4: IpPair, ipv6: IpPair, icon: Optional[str]) -> None:
+        self.name: str = name
+        self.ipv4: IpPair = ipv4
+        self.ipv6: IpPair = ipv6
+        self.icon: Optional[str] = icon
 
     @classmethod
     def from_dict(cls, name: str, data: Dict) -> DnsProvider:
