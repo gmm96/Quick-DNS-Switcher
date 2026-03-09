@@ -7,3 +7,4 @@ class Constants:
     AUTO_MODE_NAME = "Automatic"
     AUTO_MODE_ICON = "network-workgroup"
     DEFAULT_MODE_ICON = "network-server"
+    IGNORED_DEVICES = {"lo", "tun0", ""}
