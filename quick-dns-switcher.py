@@ -9,14 +9,11 @@ import signal
 import ipaddress
 import socket
 import struct
-import sys
 import logging
 from typing import Optional, List, Dict
-from PyQt6.QtWidgets import QApplication, QSystemTrayIcon, QMenu, QMessageBox
+from PyQt6.QtWidgets import QApplication, QSystemTrayIcon, QMenu
 from PyQt6.QtGui import QIcon, QAction
-from PyQt6.QtNetwork import QLocalServer, QLocalSocket
-from PyQt6.QtDBus import QDBusConnection, QDBusInterface, QDBusReply
-from PyQt6.QtCore import QObject, QTimer
+from PyQt6.QtCore import QTimer
 from utils.tools import ensure_single_instance, display_error_dialog, execute_command
 from utils.constants import Constants
 from network.ip_pair import IpPair
@@ -27,19 +24,22 @@ from network.network_connection import NetworkConnection
 
 
 PROJECT_DIR = os.path.dirname(os.path.realpath(__file__))
-CONFIG_FILE = os.path.join(PROJECT_DIR, "dns-providers.json")
-ICON_DIR = os.path.join(PROJECT_DIR, "icons")
+CONFIG_FILE = os.path.join(PROJECT_DIR, Constants.CONFIG_FILENAME)
+ICON_DIR = os.path.join(PROJECT_DIR, Constants.ICON_DIRNAME)
 
 
 # region Functions
 
 def get_active_connections_with_dns() -> List[NetworkConnection]:
-    conns = []
-    name, device = None, None
-    ipv4_list, ipv6_list = [], []
+    conns: List[NetworkConnection] = []
+    name: Optional[str] = None
+    device: Optional[str] = None
+    connected: bool = False
+    ipv4_list: List[str] = []
+    ipv6_list: List[str] = []
 
     def flush():
-        if device and name and device not in Constants.IGNORED_DEVICES:
+        if device and name and connected and device not in Constants.IGNORED_DEVICES:
             conns.append(
                 NetworkConnection(
                     name,
@@ -50,11 +50,12 @@ def get_active_connections_with_dns() -> List[NetworkConnection]:
             )
 
     result = execute_command([
-        "nmcli", "-t", "-f", "GENERAL.CONNECTION,GENERAL.DEVICE,IP4.DNS,IP6.DNS", "device", "show"
+        "nmcli", "-t", "-f", "GENERAL.CONNECTION,GENERAL.DEVICE,GENERAL.STATE,IP4.DNS,IP6.DNS", "device", "show"
     ])
     for line in result.stdout.splitlines():
         line = line.strip()
         if not line: continue
+        if ":" not in line: continue
 
         key, value = line.split(":", 1)
         value = value.strip()
@@ -66,6 +67,8 @@ def get_active_connections_with_dns() -> List[NetworkConnection]:
             ipv6_list = []
         elif key == "GENERAL.DEVICE":
             device = value
+        elif key == "GENERAL.STATE":
+            connected = value.startswith("100")
         elif key.startswith("IP4.DNS"):
             if value:
                 ipv4_list.append(value)
@@ -74,15 +77,20 @@ def get_active_connections_with_dns() -> List[NetworkConnection]:
                 ipv6_list.append(value)
 
     flush()
+    for conn in conns:
+        result = execute_command(["nmcli", "-g", "ipv4.ignore-auto-dns,ipv6.ignore-auto-dns", "connection", "show", conn.name])
+        ipv4_ignore_auto_dns, ipv6_ignore_auto_dns = [line.strip() for line in result.stdout.splitlines() if line.strip()]
+        conn.parse_ignore_auto_dns(ipv4_ignore_auto_dns, ipv6_ignore_auto_dns)
+
     return conns
 
 
 def get_current_dns() -> DnsState:
-    v4_total, v6_total = [], []
+    v4_total: List[str] = []
+    v6_total: List[str] = []
     for conn in get_active_connections_with_dns():
         v4_total.extend(conn.ipv4.get_ip_list())
         v6_total.extend(conn.ipv6.get_ip_list())
-    
     return DnsState(
         IpPair.from_list(4, list(dict.fromkeys(v4_total))),
         IpPair.from_list(6, list(dict.fromkeys(v6_total)))
@@ -92,8 +100,6 @@ def get_current_dns() -> DnsState:
 def set_dns(target_v4: IpPair, target_v6: IpPair):
     v4_ips = target_v4.get_ip_list()
     v6_ips = target_v6.get_ip_list()
-    ips = v4_ips + v6_ips
-    print(" - ".join(ips))
     v4_ignore_auto = "yes" if v4_ips else "no"
     v6_ignore_auto = "yes" if v6_ips else "no"
     for conn in get_active_connections_with_dns():
@@ -135,8 +141,8 @@ def update_state():
     if active_name == Constants.AUTO_MODE_NAME:
         tray.setIcon(QIcon.fromTheme(Constants.AUTO_MODE_ICON))
     elif provider_obj and provider_obj.icon:
-        icon_p = os.path.join(ICON_DIR, provider_obj.icon)
-        tray.setIcon(QIcon(icon_p) if os.path.exists(icon_p) else QIcon.fromTheme(Constants.DEFAULT_MODE_ICON))
+        icon_path = os.path.join(ICON_DIR, provider_obj.icon)
+        tray.setIcon(QIcon(icon_path) if os.path.exists(icon_path) else QIcon.fromTheme(Constants.DEFAULT_MODE_ICON))
     else:
         tray.setIcon(QIcon.fromTheme(Constants.DEFAULT_MODE_ICON))
 

@@ -3,6 +3,7 @@
 
 import os
 import json
+import sys
 from typing import List, Optional
 from network.dns_provider import DnsProvider
 from utils.tools import display_error_dialog
