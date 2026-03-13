@@ -20,7 +20,7 @@ from network.network_connection import NetworkConnection
 
 PROJECT_DIR = os.path.dirname(os.path.realpath(__file__))
 CONFIG_FILE = os.path.join(PROJECT_DIR, Constants.CONFIG_FILENAME)
-ICON_DIR = os.path.join(PROJECT_DIR, Constants.ICON_DIRNAME)
+ICON_DIR = os.path.join(PROJECT_DIR, Constants.ICONS_DIRNAME)
 
 
 # region Functions

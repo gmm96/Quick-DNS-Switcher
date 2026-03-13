@@ -4,8 +4,8 @@
 class Constants:
     APP_ID = "quick_dns_switcher"
     APP_NAME = "Quick DNS switcher"
-    CONFIG_FILENAME = "dns-providers.json"
-    ICON_DIRNAME = "icons"
+    CONFIG_FILENAME = "dns_providers.json"
+    ICONS_DIRNAME = "icons"
     AUTO_MODE_NAME = "Automatic"
     AUTO_MODE_ICON = "network-workgroup"
     CUSTOM_MODE_ICON = "network-server"
