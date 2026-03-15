@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import shutil
-from network.backend.network_manager_backend import NetworkManagerBackend
-from network.backend.network_backend_base import NetworkBackendBase
+from src.network.backend.network_manager_backend import NetworkManagerBackend
+from src.network.backend.network_backend_base import NetworkBackendBase
 
 
 class BackendFactory:

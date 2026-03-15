@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from network.backend.backend_factory import BackendFactory
-from network.backend.network_backend_base import NetworkBackendBase
-from utils.tools import display_error_dialog
-from quick_dns_switcher import QuickDnsSwitcher
+from src.network.backend.backend_factory import BackendFactory
+from src.network.backend.network_backend_base import NetworkBackendBase
+from src.utils.tools import display_error_dialog
+from src.quick_dns_switcher import QuickDnsSwitcher
 
 try:
     backend: NetworkBackendBase = BackendFactory.create()

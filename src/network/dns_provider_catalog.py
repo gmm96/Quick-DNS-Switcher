@@ -5,12 +5,12 @@ import os
 import json
 import sys
 from typing import List, Optional
-from network.dns_provider import DnsProvider
-from utils.tools import display_error_dialog
+from src.network.dns_provider import DnsProvider
+from src.utils.tools import display_error_dialog
 
 
-class DnsConfiguration:
-    def __init__(self, file_path: str):
+class DnsProviderCatalog:
+    def __init__(self, file_path: str) -> None:
         self.file_path: str = file_path
         self.providers: List[DnsProvider]= []
         self._load()
@@ -30,8 +30,5 @@ class DnsConfiguration:
             sys.exit(1)
         self.providers = [DnsProvider.from_dict(name, details) for name, details in data.items()]
 
-    def get_all(self) -> List[DnsProvider]:
-        return self.providers
-
-    def get_by_name(self, name: str) -> Optional[DnsProvider]:
+    def get_provider_by_name(self, name: str) -> Optional[DnsProvider]:
         return next((dns for dns in self.providers if dns.name == name), None)

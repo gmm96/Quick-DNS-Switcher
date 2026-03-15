@@ -2,24 +2,25 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from typing import List, Optional
-from network.backend.network_backend_base import NetworkBackendBase
-from network.ip_pair import IpPair
-from network.network_connection import NetworkConnection
-from utils.tools import execute_command
+from typing import List, Optional, Tuple, Set
+from src.network.backend.network_backend_base import NetworkBackendBase
+from src.network.dns_state import DnsState
+from src.network.ip_pair import IpPair
+from src.network.network_connection import NetworkConnection
+from src.utils.tools import execute_command
 
 
 class NetworkManagerBackend(NetworkBackendBase):
-    IGNORED_DEVICES = {"", "lo", "tun0", "docker0", "virbr0", "tailscale0", "wg0"}
+    IGNORED_DEVICES: Set[str] = {"", "lo", "tun0", "docker0", "virbr0", "tailscale0", "wg0"}
 
-    def __init__(self):
-        self.connections = []
+    def __init__(self, connections: Optional[List[NetworkConnection]] = None) -> None:
+        self.connections: List[NetworkConnection] = connections if connections else []
     
-    def get_active_connections(self) -> List[NetworkConnection]:
+    def get_dns_state(self) -> DnsState:
         self.connections = []
         self._retrieve_active_connections_info()
         self._fill_auto_ignore_dns_field()
-        return self.connections
+        return DnsState(self.connections)
 
     def _retrieve_active_connections_info(self) -> None:
         name: Optional[str] = None
@@ -28,7 +29,7 @@ class NetworkManagerBackend(NetworkBackendBase):
         ipv6_list: List[str] = []
         connected: bool = False
 
-        def flush():
+        def flush() -> None:
             if device and name and connected and device not in NetworkManagerBackend.IGNORED_DEVICES:
                 self.connections.append(
                     NetworkConnection(
@@ -84,7 +85,7 @@ class NetworkManagerBackend(NetworkBackendBase):
         v6_ips: List[str] = ipv6.get_ip_list()
         v4_ignore_auto: str = "yes" if v4_ips else "no"
         v6_ignore_auto: str = "yes" if v6_ips else "no"
-        for conn in self.get_active_connections():
+        for conn in self.get_dns_state().connections:
             execute_command([
                 "nmcli",
                 "connection",
