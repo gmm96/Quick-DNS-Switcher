@@ -3,16 +3,16 @@
 
 from typing import List, Optional, Set, Tuple
 from src.domain.models.dns_provider import DnsProvider
-from src.domain.models.dns_status import DnsStatus
+from src.domain.models.dns_mode import DnsMode
 from src.domain.models.network_connection import NetworkConnection
 
 
 class DnsSnapshot:
     def __init__(self, connections: List[NetworkConnection]) -> None:
         self.connections: List[NetworkConnection] = connections
-        self.status: DnsStatus = DnsStatus.DISCONNECTED
+        self.mode: DnsMode = DnsMode.DISCONNECTED
         if self.connections:
-            self.status = DnsStatus.AUTO if self.is_auto() else DnsStatus.MANUAL
+            self.mode = DnsMode.AUTO if self.is_auto() else DnsMode.MANUAL
 
     def matches_provider(self, provider: DnsProvider) -> bool:
         return all(

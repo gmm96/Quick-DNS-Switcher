@@ -2,13 +2,16 @@
 # -*- coding: utf-8 -*-
 
 from typing import Optional, Tuple
+
+from src.domain.models.device_type import DeviceType
 from src.domain.models.ip_pair import IpPair
 
 
 class NetworkConnection:
-    def __init__(self, name: str, device: str, ipv4: IpPair, ipv6: IpPair, ipv4_ignore_auto_dns: bool = False, ipv6_ignore_auto_dns: bool = False) -> None:
+    def __init__(self, name: str, device: str, type: DeviceType, ipv4: IpPair, ipv6: IpPair, ipv4_ignore_auto_dns: bool = False, ipv6_ignore_auto_dns: bool = False) -> None:
         self.name: str = name
         self.device: str = device
+        self.type: DeviceType = type
         self.ipv4: IpPair = ipv4
         self.ipv6: IpPair = ipv6
         self.ipv4_ignore_auto_dns: bool = ipv4_ignore_auto_dns

@@ -7,7 +7,7 @@ from src.domain.models.active_dns_mode import ActiveDnsMode
 from src.domain.models.dns_provider import DnsProvider
 from src.infrastructure.dns_provider_catalog import DnsProviderCatalog
 from src.domain.models.dns_snapshot import DnsSnapshot
-from src.domain.models.dns_status import DnsStatus
+from src.domain.models.dns_mode import DnsMode
 
 
 class DnsResolver:
@@ -15,9 +15,9 @@ class DnsResolver:
         self.catalog: DnsProviderCatalog = dns_provider_catalog
 
     def resolve(self, dns_state: DnsSnapshot):
-        if dns_state.status == DnsStatus.DISCONNECTED:
+        if dns_state.mode == DnsMode.DISCONNECTED:
             return ActiveDns(dns_state, ActiveDnsMode.DISCONNECTED, None)
-        if dns_state.status == DnsStatus.AUTO:
+        if dns_state.mode == DnsMode.AUTO:
             return ActiveDns(dns_state, ActiveDnsMode.AUTO, None)
         provider: Optional[DnsProvider] = self._find_provider(dns_state)
         if provider:

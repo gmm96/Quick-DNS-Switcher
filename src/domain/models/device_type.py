@@ -4,7 +4,6 @@
 from enum import Enum
 
 
-class DnsStatus(Enum):
-    DISCONNECTED = 0
-    AUTO = 1
-    MANUAL = 2
+class DeviceType(Enum):
+    WIFI = 0
+    ETHERNET = 1

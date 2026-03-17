@@ -107,13 +107,13 @@ class TrayController:
     def _update_tooltip(self, view: ActiveDnsView) -> None:
         title: str = view.display_name
         if view.mode != ActiveDnsMode.DISCONNECTED:
-            title = f"{title.capitalize()} DNS"
-        dash_count: int = 10
+            title = f"{title} DNS"
+        dash_count: int = 20
         tooltip: str = (
             f"{UiConstants.APP_NAME}\n"
-            f"{'—' * dash_count}\n"
+            f"{'─' * dash_count}\n"
             f"{title}\n"
-            f"{'—' * dash_count}\n"
+            f"{'─' * dash_count}\n"
             f"{'\n'.join(view.body)}"
         )
         self.tray.setToolTip(tooltip)
