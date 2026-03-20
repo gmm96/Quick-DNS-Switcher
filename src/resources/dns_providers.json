@@ -38,5 +38,21 @@
         "ipv6_2": "2620:119:53::53",
         "icon": "opendns.svg",
         "icon_from_theme": false
+    },
+    "Mullvad": {
+        "ipv4_1": "194.242.2.2",
+        "ipv4_2": "194.242.2.3",
+        "ipv6_1": "2a07:e340::2",
+        "ipv6_2": "2a07:e340::3",
+        "icon": "mullvad.svg",
+        "icon_from_theme": false
+    },
+    "Yandex": {
+        "ipv4_1": "77.88.8.8",
+        "ipv4_2": "77.88.8.1",
+        "ipv6_1": "2a02:6b8::feed:ff",
+        "ipv6_2": "2a02:6b8:0:1::feed:ff",
+        "icon": "yandex.svg",
+        "icon_from_theme": false
     }
 }
