@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from pathlib import Path
-from typing import Dict, Callable, Any, Optional
+from typing import Dict, Callable, Any, Optional, List
 from PyQt6.QtWidgets import QApplication, QSystemTrayIcon, QMenu
 from PyQt6.QtGui import QIcon, QAction
 from src.config.paths import Paths
-from src.domain.models.active_dns_mode import ActiveDnsMode
-from src.domain.models.active_dns_view import ActiveDnsView
-from src.infrastructure.dns_provider_catalog import DnsProviderCatalog
-from src.domain.models.ip_pair import IpPair
+from src.domain.enums.dns_mode import DnsMode
+from src.domain.models.dns.dns_provider import DnsProvider
+from src.ui.models.dns_view import DnsView
+from src.domain.models.network.ip_pair import IpPair
 from src.ui.models.app_icon import AppIcon
 from src.ui.ui_constants import UiConstants
 from src.ui.ui_context import UiContext
@@ -18,15 +18,15 @@ from src.ui.ui_context import UiContext
 class TrayController:
     def __init__(self,
         app: QApplication,
-        dns_provider_catalog: DnsProviderCatalog,
+        dns_providers: List[DnsProvider],
         set_dns_callback: Callable[[IpPair, IpPair], None],
         open_config_callback: Callable[[], None],
         restart_callback: Callable[[], None],
         quit_callback: Callable[[], None]
     ) -> None:
         self.app: QApplication = app
-        self.catalog: DnsProviderCatalog = dns_provider_catalog
-        self.set_dns_callback = set_dns_callback
+        self.dns_providers: List[DnsProvider] = dns_providers
+        self.set_dns_callback: Callable[[IpPair, IpPair], None] = set_dns_callback
         self.tray: QSystemTrayIcon = QSystemTrayIcon()
         self.menu: QMenu = QMenu()
         self.menu_provider_actions: Dict[str, QAction] = {}
@@ -42,7 +42,7 @@ class TrayController:
         self.storage_icons[UiConstants.AUTO_ICON] = TrayController._build_icon(UiConstants.AUTO_ICON, False)
         self.storage_icons[UiConstants.DEFAULT_ICON] = TrayController._build_icon(UiConstants.DEFAULT_ICON, False)
         self.storage_icons[UiConstants.DISCONNECTED_ICON] = TrayController._build_icon(UiConstants.DISCONNECTED_ICON, False)
-        for provider in self.catalog.providers:
+        for provider in self.dns_providers:
             if provider.icon:
                 if provider.icon_from_theme:
                     qicon: QIcon = QIcon.fromTheme(provider.icon)
@@ -68,7 +68,11 @@ class TrayController:
             return self.theme_icons.get(key, self.storage_icons[UiConstants.DEFAULT_ICON])
         return self.storage_icons.get(key, self.storage_icons[UiConstants.DEFAULT_ICON])
 
-    def _build_menu(self, open_config_callback: Callable, restart_callback: Callable, quit_callback: Callable) -> None:
+    def _build_menu(self,
+        open_config_callback: Callable[[], None],
+        restart_callback: Callable[[], None],
+        quit_callback: Callable[[], None]
+    ) -> None:
         # Title
         title_action: QAction = QAction(f"──  {UiConstants.APP_NAME.upper()}  ──", self.menu)
         title_action.setEnabled(False)
@@ -80,7 +84,7 @@ class TrayController:
         self.menu.addAction(self.auto_action)
         self.menu.addSeparator()
         # Provider DNS
-        for provider in sorted(self.catalog.providers, key=lambda x: x.name):
+        for provider in sorted(self.dns_providers, key=lambda x: x.name):
             action: QAction = QAction(f"{UiConstants.LEFT_MARGIN}{provider.name}", self.menu)
             action.triggered.connect(self._make_set_dns_action(provider.ipv4, provider.ipv6))
             action.setIcon(self.get_icon(provider.icon, provider.icon_from_theme).icon)
@@ -101,21 +105,21 @@ class TrayController:
         exit_action.triggered.connect(quit_callback)
         self.menu.addAction(exit_action)
 
-    def update(self, view: ActiveDnsView) -> None:
+    def update(self, view: DnsView) -> None:
         self._update_icon(view)
         self._update_menu(view)
         self._update_tooltip(view)
 
-    def _update_icon(self, view: ActiveDnsView) -> None:
+    def _update_icon(self, view: DnsView) -> None:
         self.tray.setIcon(self.get_icon(view.icon_key, view.from_theme).icon)
 
-    def _update_menu(self, view: ActiveDnsView) -> None:
-        self.auto_action.setText(f"{UiConstants.SELECTED_ITEM}{UiConstants.AUTO_NAME}" if view.mode == ActiveDnsMode.AUTO else f"{UiConstants.LEFT_MARGIN}{UiConstants.AUTO_NAME}")
+    def _update_menu(self, view: DnsView) -> None:
+        self.auto_action.setText(f"{UiConstants.SELECTED_ITEM}{UiConstants.AUTO_NAME}" if view.mode == DnsMode.AUTO else f"{UiConstants.LEFT_MARGIN}{UiConstants.AUTO_NAME}")
         for name, action in self.menu_provider_actions.items():
             action.setText(f"{UiConstants.SELECTED_ITEM}{name}" if name == view.display_name else f"{UiConstants.LEFT_MARGIN}{name}")
 
-    def _update_tooltip(self, view: ActiveDnsView) -> None:
-        title: str = f"{view.display_name} DNS" if view.mode != ActiveDnsMode.DISCONNECTED else view.display_name
+    def _update_tooltip(self, view: DnsView) -> None:
+        title: str = f"{view.display_name} DNS" if view.mode != DnsMode.DISCONNECTED else view.display_name
         dash_count: int = 16
         tooltip: str = (
             f"{UiConstants.APP_NAME}\n"

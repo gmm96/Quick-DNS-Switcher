@@ -1,11 +1,10 @@
 # Quick DNS Switcher
 
-![Status](https://img.shields.io/badge/status-active-success?style=for-the-badge&logo=statuspage)
-![Python](https://img.shields.io/badge/python-3.8+-blue?style=for-the-badge&logo=python)
-![Qt](https://img.shields.io/badge/Qt-PyQt6-green?style=for-the-badge&logo=qt)
-![Platform](https://img.shields.io/badge/platform-Linux-lightgrey?style=for-the-badge&logo=linux)
-![NetworkManager](https://img.shields.io/badge/network-NetworkManager-red?style=for-the-badge&logo=red)
-[![License](https://img.shields.io/badge/license-GPLv3-orange?style=for-the-badge&logo=gplv3)
+![Status](https://img.shields.io/badge/status-active-success?style=for-the-badge&logo=statuspage&logoColor=brightgreen)
+![Platform](https://img.shields.io/badge/platform-Linux-yellow?style=for-the-badge&logo=linux&logoColor=gold)
+![Python](https://img.shields.io/badge/python-3.8+-blue?style=for-the-badge&logo=python&logoColor=blue)
+![Qt](https://img.shields.io/badge/Qt-PyQt6-orange?style=for-the-badge&logo=qt&logoColor=orange)
+[![License](https://img.shields.io/badge/license-GPLv3-green?style=for-the-badge&logo=gplv3&logoColor=green)
 ](LICENSE)
 
 A lightweight system tray application that allows you to quickly switch between configured DNS providers with just two clicks. Built with PyQt6, it supports both IPv4 and IPv6 DNS servers and runs on Linux ~~and Windows~~ platforms.
@@ -59,7 +58,7 @@ A lightweight system tray application that allows you to quickly switch between 
 
 
 ## Configuration
-DNS providers are configured in [src/resources/dns_providers.json](src/resources/dns_providers.json):
+DNS providers are configured in [src/resources/dns_providers.json](src/resources/config/dns_providers.json):
 
 ```json
 {
@@ -82,9 +81,8 @@ DNS providers are configured in [src/resources/dns_providers.json](src/resources
 - Your custom provider will appear in the menu
 
 
-# Support
+## Support
 If you encounter any issues or have questions:
-
 1. Check the troubleshooting section above
 2. Search existing issues on GitHub
 3. Create a new issue with detailed information about your problem
@@ -93,3 +91,15 @@ If you encounter any issues or have questions:
 
 ## License
 This project is licensed under the GNU General Public License v3.0. See the [LICENSE](LICENSE) file for details.
+
+
+## Screenshots
+
+![Menu](src/resources/docs/screenshots/menu.png)
+
+![Notification](src/resources/docs/screenshots/notification.png)
+
+![Tooltip](src/resources/docs/screenshots/tooltip.png)
+
+![System tray](src/resources/docs/screenshots/tray.png)
+
