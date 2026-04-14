@@ -16,6 +16,5 @@ class QtNotifier(NotifierBase):
 
     def notify(self, title: str, message: str, icon: AppIcon, timeout: int = 5000) -> None:
         if self.tray is None:
-            raise Exception
-            # TODO
+            raise Exception("QtNotifier tray is not initialized")
         self.tray.showMessage(title, message, icon.icon, timeout)

@@ -4,12 +4,12 @@
 import os
 import json
 from pathlib import Path
-from typing import List, Optional, Dict
-from src.domain.models.dns_provider import DnsProvider
+from typing import List, Dict
+from src.domain.models.dns.dns_provider import DnsProvider
 from src.infrastructure.errors.dns_catalog_load_error import DnsCatalogLoadError
 
 
-class DnsProviderCatalog:
+class DnsProviderLoader:
     def __init__(self, file_path: Path) -> None:
         self.file_path: Path = file_path
         self.providers: List[DnsProvider]= []
@@ -26,6 +26,3 @@ class DnsProviderCatalog:
         except Exception as e:
             raise DnsCatalogLoadError(f"Unexpected error loading DNS configuration file:\n\n{self.file_path}\n\n{e}") from e
         self.providers = [DnsProvider.from_dict(name, details) for name, details in data.items()]
-
-    def get_provider_by_name(self, name: str) -> Optional[DnsProvider]:
-        return next((dns for dns in self.providers if dns.name == name), None)

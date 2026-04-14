@@ -8,5 +8,5 @@ from src.ui.dialog_controller import DialogController
 
 class QtErrorHandler(ErrorHandler):
     def _show(self, title: str, message: str):
-        logging.error(f"{title}: {message}")
+        logging.error(f"{title}: {message}", exc_info=True, stack_info=True)
         DialogController.show_error(f"{title}\n\n{message}")

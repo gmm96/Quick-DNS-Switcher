@@ -4,6 +4,6 @@
 from enum import Enum
 
 
-class DeviceType(Enum):
+class NetworkDeviceType(Enum):
     WIFI = 0
     ETHERNET = 1

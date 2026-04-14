@@ -13,3 +13,6 @@ class WindowsFactory(PlatformFactory):
 
     def create_monitor(self):
         raise Exception
+
+    def create_system_dns_reader(self):
+        pass

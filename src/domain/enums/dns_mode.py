@@ -4,7 +4,7 @@
 from enum import Enum
 
 
-class ActiveDnsMode(Enum):
+class DnsMode(Enum):
     DISCONNECTED = 0
     AUTO = 1
     PROVIDER = 2
