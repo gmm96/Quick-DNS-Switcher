@@ -1,8 +1,11 @@
 [Desktop Entry]
 Type=Application
 Name=Quick DNS Switcher
-Exec=python -m src.main
-Path=/home/gmm/.quick-dns-switcher
-Icon=/home/gmm/.quick-dns-switcher/src/resources/assets/icons/quick-dns-switcher-logo.svg
-X-GNOME-Autostart-enabled=true
+GenericName=DNS Switcher
+Comment=System tray utility to manage and switch DNS settings via NetworkManager
+Exec=quick-dns-switcher
+Icon=qds-quick-dns-switcher
 Terminal=false
+Categories=Network;Utility;
+StartupNotify=false
+X-GNOME-Autostart-enabled=true
