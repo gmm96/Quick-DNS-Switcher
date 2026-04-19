@@ -33,7 +33,7 @@ class IpPair:
             raise ValueError(f"IP address {ip} does not match version {self.version}")
 
     def get_ip_list(self) -> List[str]:
-        return [ip for ip in (self.main, self.alternative) if ip]
+        return list(filter(None, (self.main, self.alternative)))
 
     def __eq__(self, other: Optional[object]) -> bool:
         if not isinstance(other, IpPair): return False

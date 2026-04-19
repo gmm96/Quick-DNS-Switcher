@@ -4,9 +4,10 @@
 import platform
 from PyQt6.QtWidgets import QApplication
 from src.app.quick_dns_switcher import QuickDnsSwitcher
-from src.config.paths import Paths
+from src.config.app_settings import AppSettings
 from src.domain.services.dns_interpreter import DnsInterpreter
 from src.infrastructure.backend.network_backend_base import NetworkBackendBase
+from src.infrastructure.config.user_config_initializer import UserConfigInitializer
 from src.infrastructure.dns.dns_provider_loader import DnsProviderLoader
 from src.infrastructure.monitoring.network_monitor_base import NetworkMonitorBase
 from src.infrastructure.network.network_state_provider import NetworkStateProvider
@@ -20,11 +21,14 @@ from src.startup.windows_factory import WindowsFactory
 class Bootstrap:
     @staticmethod
     def create_app(qt_app: QApplication) -> QuickDnsSwitcher:
+        app_settings: AppSettings = AppSettings()
+        user_config_initializer: UserConfigInitializer = UserConfigInitializer(app_settings)
+        user_config_initializer.ensure_dns_providers_file()
         platform_factory: PlatformFactory = Bootstrap._get_platform_factory()
         backend: NetworkBackendBase = platform_factory.create_backend()
         system_dns_reader: SystemDnsReaderBase = platform_factory.create_system_dns_reader()
         network_state_provider: NetworkStateProvider = NetworkStateProvider(backend, system_dns_reader)
-        dns_provider_loader: DnsProviderLoader = DnsProviderLoader(Paths.DNS_PROVIDERS_FILE)
+        dns_provider_loader: DnsProviderLoader = DnsProviderLoader(app_settings.dns_providers_file)
         dns_interpreter: DnsInterpreter = DnsInterpreter(dns_provider_loader.providers)
         notifier: NotifierBase = platform_factory.create_notifier()
         monitor: NetworkMonitorBase = platform_factory.create_monitor()
@@ -35,7 +39,8 @@ class Bootstrap:
             dns_interpreter=dns_interpreter,
             notifier=notifier,
             monitor=monitor,
-            dns_providers=dns_provider_loader.providers
+            dns_providers=dns_provider_loader.providers,
+            app_settings=app_settings
         )
 
     @staticmethod

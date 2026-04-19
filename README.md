@@ -1,13 +1,15 @@
 # Quick DNS Switcher
 
 ![Status](https://img.shields.io/badge/status-active-success?style=for-the-badge&logo=statuspage&logoColor=brightgreen)
-![Platform](https://img.shields.io/badge/platform-Linux-yellow?style=for-the-badge&logo=linux&logoColor=gold)
-![Python](https://img.shields.io/badge/python-3.8+-blue?style=for-the-badge&logo=python&logoColor=blue)
-![Qt](https://img.shields.io/badge/Qt-PyQt6-orange?style=for-the-badge&logo=qt&logoColor=orange)
-[![License](https://img.shields.io/badge/license-GPLv3-green?style=for-the-badge&logo=gplv3&logoColor=green)
-](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-GNU%2Flinux%20%28nmcli%29-yellow?style=for-the-badge&logo=linux&logoColor=gold)](https://networkmanager.dev)
+[![Python](https://img.shields.io/badge/python-3.8+-blue?style=for-the-badge&logo=python&logoColor=blue)](https://python.org)
+[![Qt](https://img.shields.io/badge/Qt-PyQt6-orange?style=for-the-badge&logo=qt&logoColor=orange)](https://doc.qt.io/qtforpython-6)
+[![License](https://img.shields.io/badge/license-GPLv3-green?style=for-the-badge&logo=gplv3&logoColor=green)](LICENSE)
 
-A lightweight system tray application that allows you to quickly switch between configured DNS providers with just two clicks. Built with PyQt6, it supports both IPv4 and IPv6 DNS servers and runs on Linux ~~and Windows~~ platforms.
+A lightweight system tray application that allows you to **quickly switch between configured DNS providers** with just two clicks.
+Built with PyQt6, it supports both IPv4 and IPv6 DNS servers and runs on GNU/Linux platforms with NetworkManager as network configuration tool suite.
+
+![Menu](src/resources/docs/screenshots/menu.png)
 
 
 ## Features
@@ -15,7 +17,7 @@ A lightweight system tray application that allows you to quickly switch between 
 - **IPv4 & IPv6 support**: Full dual-stack compatibility
 - **Real-time Monitoring**: Automatically detects network changes and updates DNS status.
 - **System Tray Integration**: Runs silently in the background with minimal resource usage.
-- **Cross-Platform**: Supports Linux (via NetworkManager) ~~and Windows~~.
+- **Cross-Platform**: Supports Linux (via NetworkManager).
 - **Notifications**: Desktop notifications when DNS settings change.
 - **Multiple DNS providers**: Pre-configured with 7 popular DNS providers:
   - Cloudflare
@@ -31,12 +33,11 @@ A lightweight system tray application that allows you to quickly switch between 
 ## Requirements
 ### System Requirements
 - **Linux**: NetworkManager with `nmcli` command-line tool
-- ~~**Windows**: Windows 10/11~~
 - **Python 3.8+**
 
 ### Python Dependencies
 - PyQt6
-- dbus-python
+
 
 ## Installation
 
@@ -58,7 +59,7 @@ A lightweight system tray application that allows you to quickly switch between 
 
 
 ## Configuration
-DNS providers are configured in [src/resources/dns_providers.json](src/resources/config/dns_providers.json):
+DNS providers are configured in [src/resources/config/dns_providers.json](src/resources/config/dns_providers.json). Providers have next format in configuration file:
 
 ```json
 {
@@ -73,12 +74,18 @@ DNS providers are configured in [src/resources/dns_providers.json](src/resources
 }
 ```
 
+Icon field value can be icon name from your system theme or an SVG/PNG file.
+
+If you choose an SVG/PNG file, it should placed in [src/resources/assets/icons](src/resources/assets/icons) directory. Then, fill provider variable ```icon``` with its filename (just filename with extension, no path) and adjust ```icon_from_theme``` variable in configuration file.
+
+
 ### Adding a custom DNS provider:
 
-- Open src/resources/dns_providers.json
-- Add a new entry following the format above
-- Restart the application
-- Your custom provider will appear in the menu
+- Right click on app icon in system tray.
+- Select ```Edit DNS providers``` from the context menu to open configuration file [src/resources/config/dns_providers.json](src/resources/config/dns_providers.json).
+- Add a new entry following the format above and save the file.
+- Restart application using ```Restart``` app menu option.
+- Your custom provider will now appear in the menu.
 
 
 ## Support

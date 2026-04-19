@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from dataclasses import dataclass
-from typing import List, Set, Tuple
+from typing import List, Set, Tuple, Optional
 from src.domain.models.network.network_connection import NetworkConnection
 
 
@@ -13,5 +13,5 @@ class NetworkConfiguration:
     ipv6_enabled: bool = False
     is_auto: bool = False
 
-    def identity(self) -> Set[Tuple[str, str, str, str, bool, bool, bool, bool]]:
+    def identity(self) -> Set[Tuple[Optional[str], Optional[str], Optional[str], Optional[str], bool, bool, bool, bool]]:
         return {conn.identity() for conn in self.connections}

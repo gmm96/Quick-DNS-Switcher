@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Quick DNS Switcher
+Exec=python -m src.main
+Path=/home/gmm/.quick-dns-switcher
+Icon=/home/gmm/.quick-dns-switcher/src/resources/assets/icons/quick-dns-switcher-logo.svg
+X-GNOME-Autostart-enabled=true
+Terminal=false

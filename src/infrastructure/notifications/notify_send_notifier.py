@@ -16,8 +16,8 @@ class NotifySendNotifier(NotifierBase):
             [
                 "notify-send",
                 "-a", UiConstants.APP_NAME,
-                "-t", timeout,
-                "-i", icon,
+                "-t", str(timeout),
+                "-i", icon.name,
                 title,
                 body,
             ],

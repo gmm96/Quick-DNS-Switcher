@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from pathlib import Path
 from typing import Dict, Callable, Any, Optional, List
 from PyQt6.QtWidgets import QApplication, QSystemTrayIcon, QMenu
 from PyQt6.QtGui import QIcon, QAction
-from src.config.paths import Paths
 from src.domain.enums.dns_mode import DnsMode
 from src.domain.models.dns.dns_provider import DnsProvider
 from src.ui.models.dns_view import DnsView
@@ -30,43 +28,29 @@ class TrayController:
         self.tray: QSystemTrayIcon = QSystemTrayIcon()
         self.menu: QMenu = QMenu()
         self.menu_provider_actions: Dict[str, QAction] = {}
-        self.theme_icons: Dict[str, AppIcon] = {}
-        self.storage_icons: Dict[str, AppIcon] = {}
+        self.icons: Dict[str, AppIcon] = {}
         self._create_icons()
         self._build_menu(open_config_callback, restart_callback, quit_callback)
-        self.tray.setIcon(self.get_icon(UiConstants.DEFAULT_ICON, False).icon)
+        self.tray.setIcon(self.get_icon(UiConstants.UNKNOWN_ICON).qicon)
         self.tray.setContextMenu(self.menu)
         self.tray.show()
 
     def _create_icons(self) -> None:
-        self.storage_icons[UiConstants.AUTO_ICON] = TrayController._build_icon(UiConstants.AUTO_ICON, False)
-        self.storage_icons[UiConstants.DEFAULT_ICON] = TrayController._build_icon(UiConstants.DEFAULT_ICON, False)
-        self.storage_icons[UiConstants.DISCONNECTED_ICON] = TrayController._build_icon(UiConstants.DISCONNECTED_ICON, False)
+        self._build_icon(UiConstants.AUTO_ICON)
+        self._build_icon(UiConstants.UNKNOWN_ICON)
+        self._build_icon(UiConstants.DISCONNECTED_ICON)
         for provider in self.dns_providers:
-            if provider.icon:
-                if provider.icon_from_theme:
-                    qicon: QIcon = QIcon.fromTheme(provider.icon)
-                    if not qicon.isNull():
-                        self.theme_icons[provider.icon] = TrayController._build_icon(provider.icon, True)
-                else:
-                    icon_path: Path = Paths.ICONS_DIR / provider.icon
-                    if icon_path.exists():
-                        qicon: QIcon = QIcon(str(icon_path))
-                        if not qicon.isNull():
-                            self.storage_icons[provider.icon] = TrayController._build_icon(provider.icon, False)
+            if provider.icon_name:
+                self._build_icon(provider.icon_name)
 
-    @staticmethod
-    def _build_icon(name: str, from_theme: bool) -> Optional[AppIcon]:
-        icon_path: Optional[Path] = None if from_theme else str(Paths.ICONS_DIR / name)
-        qicon: QIcon = QIcon.fromTheme(name) if from_theme else QIcon(icon_path)
-        if not qicon.isNull():
-            return AppIcon(name=name, from_theme=from_theme, icon=qicon, path=icon_path)
-        return None
+    def _build_icon(self, name: str) -> None:
+        qicon: QIcon = QIcon.fromTheme(name)
+        if qicon.isNull():
+            return
+        self.icons[name] = AppIcon(name=name, qicon=qicon)
 
-    def get_icon(self, key: str, from_theme: bool) -> AppIcon:
-        if from_theme:
-            return self.theme_icons.get(key, self.storage_icons[UiConstants.DEFAULT_ICON])
-        return self.storage_icons.get(key, self.storage_icons[UiConstants.DEFAULT_ICON])
+    def get_icon(self, key: Optional[str]) -> AppIcon:
+        return self.icons.get(key or "", self.icons[UiConstants.UNKNOWN_ICON])
 
     def _build_menu(self,
         open_config_callback: Callable[[], None],
@@ -79,15 +63,15 @@ class TrayController:
         self.menu.addAction(title_action)
         self.menu.addSeparator()
         # Automatic DNS
-        self.auto_action = QAction(self.get_icon(UiConstants.AUTO_ICON, False).icon, UiConstants.AUTO_NAME, self.menu)
+        self.auto_action = QAction(self.get_icon(UiConstants.AUTO_ICON).qicon, UiConstants.AUTO_NAME, self.menu)
         self.auto_action.triggered.connect(self._make_set_dns_action(IpPair(4), IpPair(6)))
         self.menu.addAction(self.auto_action)
         self.menu.addSeparator()
         # Provider DNS
-        for provider in sorted(self.dns_providers, key=lambda x: x.name):
+        for provider in sorted(self.dns_providers, key=lambda x: x.theme_icon_name):
             action: QAction = QAction(f"{UiConstants.LEFT_MARGIN}{provider.name}", self.menu)
             action.triggered.connect(self._make_set_dns_action(provider.ipv4, provider.ipv6))
-            action.setIcon(self.get_icon(provider.icon, provider.icon_from_theme).icon)
+            action.setIcon(self.get_icon(provider.icon_name).qicon)
             self.menu.addAction(action)
             self.menu_provider_actions[provider.name] = action
         self.menu.addSeparator()
@@ -111,7 +95,7 @@ class TrayController:
         self._update_tooltip(view)
 
     def _update_icon(self, view: DnsView) -> None:
-        self.tray.setIcon(self.get_icon(view.icon_key, view.from_theme).icon)
+        self.tray.setIcon(self.get_icon(view.icon_key).qicon)
 
     def _update_menu(self, view: DnsView) -> None:
         self.auto_action.setText(f"{UiConstants.SELECTED_ITEM}{UiConstants.AUTO_NAME}" if view.mode == DnsMode.AUTO else f"{UiConstants.LEFT_MARGIN}{UiConstants.AUTO_NAME}")
