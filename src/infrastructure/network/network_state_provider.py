@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from typing import List
+from typing import List, Optional
 from src.domain.models.dns.resolved_dns import ResolvedDns
 from src.domain.models.network.network_configuration import NetworkConfiguration
 from src.domain.models.network.network_connection import NetworkConnection
@@ -18,7 +18,7 @@ class NetworkStateProvider:
     def retrieve(self) -> NetworkState:
         connections: List[NetworkConnection] = self.backend.get_active_connections()
         network_config: NetworkConfiguration = self._get_network_config_from_connections(connections)
-        system_dns_config: ResolvedDns = self.system_dns_reader.read(network_config.ipv4_enabled, network_config.ipv6_enabled)
+        system_dns_config: Optional[ResolvedDns] = self.system_dns_reader.read(network_config.ipv4_enabled, network_config.ipv6_enabled)
         if not system_dns_config:
             raise Exception
         return NetworkState(network_config, system_dns_config)

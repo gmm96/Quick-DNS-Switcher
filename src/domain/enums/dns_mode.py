@@ -8,4 +8,4 @@ class DnsMode(Enum):
     DISCONNECTED = 0
     AUTO = 1
     PROVIDER = 2
-    CUSTOM = 3
+    UNKNOWN = 3

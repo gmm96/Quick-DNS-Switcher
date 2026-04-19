@@ -6,7 +6,7 @@ from typing import Optional, List
 from PyQt6.QtNetwork import QLocalServer, QLocalSocket
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtCore import QTimer
-from src.config.paths import Paths
+from src.config.app_settings import AppSettings
 from src.domain.models.dns.dns_interpretation import DnsInterpretation
 from src.domain.enums.dns_mode import DnsMode
 from src.domain.models.dns.dns_provider import DnsProvider
@@ -35,7 +35,8 @@ class QuickDnsSwitcher:
         dns_interpreter: DnsInterpreter,
         notifier: NotifierBase,
         monitor: NetworkMonitorBase,
-        dns_providers: List[DnsProvider]
+        dns_providers: List[DnsProvider],
+        app_settings: AppSettings
     ) -> None:
         # Dependencies
         self.backend: NetworkBackendBase = backend
@@ -44,6 +45,7 @@ class QuickDnsSwitcher:
         self.notifier: NotifierBase = notifier
         self.monitor: NetworkMonitorBase = monitor
         self.dns_providers: List[DnsProvider] = dns_providers
+        self.app_settings: AppSettings = app_settings
         # UI
         self.app: QApplication = app
         self.app.setDesktopFileName(UiConstants.APP_NAME)
@@ -71,12 +73,12 @@ class QuickDnsSwitcher:
 
     def _ensure_single_instance(self) -> None:
         socket: QLocalSocket = QLocalSocket()
-        socket.connectToServer(UiConstants.APP_ID)
+        socket.connectToServer(self.app_settings.app_name)
         if socket.waitForConnected(500):
             sys.exit(0)
         self.server: QLocalServer = QLocalServer()
-        self.server.removeServer(UiConstants.APP_ID)
-        self.server.listen(UiConstants.APP_ID)
+        self.server.removeServer(self.app_settings.app_name)
+        self.server.listen(self.app_settings.app_name)
 
     def _set_dns(self, ipv4: IpPair, ipv6: IpPair) -> None:
         self.backend.set_dns(ipv4, ipv6)
@@ -96,13 +98,12 @@ class QuickDnsSwitcher:
         self.debouncer.trigger()
 
     def _send_notification(self, view: DnsView) -> None:
-        icon: AppIcon = self.tray.get_icon(view.icon_key, view.from_theme)
+        icon: AppIcon = self.tray.get_icon(view.icon_key)
         title: str = f"{view.display_name} DNS" if view.mode != DnsMode.DISCONNECTED else view.display_name
         self.notifier.notify(title, "\n".join(view.body), icon)
 
-    @staticmethod
-    def _open_config() -> None:
-        CommandExecutor.execute_async(["xdg-open", Paths.DNS_PROVIDERS_FILE])
+    def _open_config(self) -> None:
+        CommandExecutor.execute_async(["xdg-open", str(self.app_settings.dns_providers_file)])
 
     @staticmethod
     def _restart_app() -> None:

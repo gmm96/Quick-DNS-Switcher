@@ -5,17 +5,16 @@
 class UiConstants:
     # App name
     APP_NAME: str = "Quick DNS Switcher"
-    APP_ID: str = "quick_dns_switcher"
     # Active dns modes
     AUTO_NAME: str = "Automatic"
     DISCONNECTED_NAME: str = "Disconnected"
-    CUSTOM_NAME: str = "Custom"
+    UNKNOWN_NAME: str = "Unknown"
     # Default description
     DEFAULT_BODY: str = "Default"
     # Icons from theme
-    AUTO_ICON: str = "qds-dns-auto.svg"
-    DISCONNECTED_ICON: str = "qds-dns-disconnected.svg"
-    DEFAULT_ICON: str = "qds-dns-unknown.svg"
+    AUTO_ICON: str = "qds-auto.svg"
+    DISCONNECTED_ICON: str = "qds-disconnected.svg"
+    UNKNOWN_ICON: str = "qds-unknown.svg"
     # Menu
     LEFT_MARGIN: str = "      "
     SELECTED_ITEM: str = "  ✔ "

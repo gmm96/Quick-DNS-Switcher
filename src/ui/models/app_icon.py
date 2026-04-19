@@ -2,14 +2,10 @@
 # -*- coding: utf-8 -*-
 
 from dataclasses import dataclass
-from pathlib import Path
-from typing import Optional
 from PyQt6.QtGui import QIcon
 
 
-@dataclass
+@dataclass(frozen=True)
 class AppIcon:
     name: str
-    from_theme: bool
-    icon: QIcon
-    path: Optional[Path] = None
+    qicon: QIcon

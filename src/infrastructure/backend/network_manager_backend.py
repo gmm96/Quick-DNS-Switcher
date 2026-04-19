@@ -70,14 +70,14 @@ class NetworkManagerBackend(NetworkBackendBase):
         self._add_network_connection(name, device, device_type, connected, ipv4_list, ipv6_list)
 
     def _add_network_connection(self,
-        name: str,
-        device: str,
-        type_str: str,
+        name: Optional[str],
+        device: Optional[str],
+        type_str: Optional[str],
         connected: bool,
         ipv4_list: List[str],
         ipv6_list: List[str]
     ) -> None:
-        if not all([name, device, connected]):
+        if not name or not device or not type_str or not connected:
             return
         try:
             device_type: NetworkDeviceType = NetworkDeviceType[type_str.upper()]

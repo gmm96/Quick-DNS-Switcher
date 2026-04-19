@@ -10,6 +10,6 @@ from src.domain.models.network_state import NetworkState
 
 @dataclass(frozen=True)
 class DnsInterpretation:
-    network_state: NetworkState
     dns_mode: DnsMode
+    network_state: NetworkState
     provider: Optional[DnsProvider] = None

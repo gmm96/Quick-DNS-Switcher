@@ -14,5 +14,7 @@ class UiContext:
             try:
                 function()
             except Exception as e:
+                if UiContext.error_handler is None:
+                    raise
                 UiContext.error_handler.handle(e)
         return wrapper

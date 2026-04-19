@@ -14,13 +14,13 @@ class DnsInterpreter:
 
     def resolve(self, network_state: NetworkState) -> DnsInterpretation:
         if not network_state.network_configuration.connections:
-            return DnsInterpretation(network_state, DnsMode.DISCONNECTED, None)
+            return DnsInterpretation(DnsMode.DISCONNECTED, network_state, None)
         if network_state.network_configuration.is_auto:
-            return DnsInterpretation(network_state, DnsMode.AUTO, None)
+            return DnsInterpretation(DnsMode.AUTO, network_state, None)
         provider: Optional[DnsProvider] = self._find_provider(network_state)
         if provider:
-            return DnsInterpretation(network_state, DnsMode.PROVIDER, provider)
-        return DnsInterpretation(network_state, DnsMode.CUSTOM, None)
+            return DnsInterpretation(DnsMode.PROVIDER, network_state, provider)
+        return DnsInterpretation(DnsMode.UNKNOWN, network_state, None)
 
     def _find_provider(self, network_state: NetworkState) -> Optional[DnsProvider]:
         if not network_state.resolved_dns.top:

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=Quick DNS Switcher
+GenericName=DNS Switcher
+Comment=System tray utility to manage and switch DNS settings via NetworkManager
+Exec=quick-dns-switcher
+Icon=qds-quick-dns-switcher
+Terminal=false
+Categories=Network;Utility;
+StartupNotify=false
+X-GNOME-Autostart-enabled=true

@@ -28,7 +28,7 @@ class NetworkConnection:
         self.ipv4_enabled: bool = ipv4_enabled
         self.ipv6_enabled: bool = ipv6_enabled
 
-    def identity(self) -> Tuple[str, str, str, str, bool, bool, bool, bool]:
+    def identity(self) -> Tuple[Optional[str], Optional[str], Optional[str], Optional[str], bool, bool, bool, bool]:
         return (
             self.ipv4.main,
             self.ipv4.alternative,
