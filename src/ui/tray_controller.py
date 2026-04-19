@@ -68,7 +68,7 @@ class TrayController:
         self.menu.addAction(self.auto_action)
         self.menu.addSeparator()
         # Provider DNS
-        for provider in sorted(self.dns_providers, key=lambda x: x.theme_icon_name):
+        for provider in sorted(self.dns_providers, key=lambda x: x.name):
             action: QAction = QAction(f"{UiConstants.LEFT_MARGIN}{provider.name}", self.menu)
             action.triggered.connect(self._make_set_dns_action(provider.ipv4, provider.ipv6))
             action.setIcon(self.get_icon(provider.icon_name).qicon)
