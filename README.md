@@ -9,7 +9,7 @@
 A lightweight system tray application that allows you to **quickly switch between configured DNS providers** with just two clicks.
 Built with PyQt6, it supports both IPv4 and IPv6 DNS servers and runs on GNU/Linux platforms with NetworkManager as network configuration tool suite.
 
-![Menu](src/resources/docs/screenshots/menu.png)
+![Menu](qds/resources/docs/screenshots/menu.png)
 
 
 ## Features
@@ -54,12 +54,12 @@ Built with PyQt6, it supports both IPv4 and IPv6 DNS servers and runs on GNU/Lin
    ```
 3. **Run the application**:
     ```bash
-    python3 src/main.py
+    python3 qds/main.py
     ```
 
 
 ## Configuration
-DNS providers are configured in [src/resources/config/dns_providers.json](src/resources/config/dns_providers.json). Providers have next format in configuration file:
+DNS providers are configured in [qds/resources/config/dns_providers.json](qds/resources/config/dns_providers.json). Providers have next format in configuration file:
 
 ```json
 {
@@ -76,13 +76,13 @@ DNS providers are configured in [src/resources/config/dns_providers.json](src/re
 
 Icon field value can be icon name from your system theme or an SVG/PNG file.
 
-If you choose an SVG/PNG file, it should placed in [src/resources/assets/icons](src/resources/assets/icons) directory. Then, fill provider variable ```icon``` with its filename (just filename with extension, no path) and adjust ```icon_from_theme``` variable in configuration file.
+If you choose an SVG/PNG file, it should placed in [qds/resources/assets/icons](qds/resources/assets/icons) directory. Then, fill provider variable ```icon``` with its filename (just filename with extension, no path) and adjust ```icon_from_theme``` variable in configuration file.
 
 
 ### Adding a custom DNS provider:
 
 - Right click on app icon in system tray.
-- Select ```Edit DNS providers``` from the context menu to open configuration file [src/resources/config/dns_providers.json](src/resources/config/dns_providers.json).
+- Select ```Edit DNS providers``` from the context menu to open configuration file [qds/resources/config/dns_providers.json](qds/resources/config/dns_providers.json).
 - Add a new entry following the format above and save the file.
 - Restart application using ```Restart``` app menu option.
 - Your custom provider will now appear in the menu.
@@ -102,11 +102,11 @@ This project is licensed under the GNU General Public License v3.0. See the [LIC
 
 ## Screenshots
 
-![Menu](src/resources/docs/screenshots/menu.png)
+![Menu](qds/resources/docs/screenshots/menu.png)
 
-![Notification](src/resources/docs/screenshots/notification.png)
+![Notification](qds/resources/docs/screenshots/notification.png)
 
-![Tooltip](src/resources/docs/screenshots/tooltip.png)
+![Tooltip](qds/resources/docs/screenshots/tooltip.png)
 
-![System tray](src/resources/docs/screenshots/tray.png)
+![System tray](qds/resources/docs/screenshots/tray.png)
 
