@@ -100,6 +100,7 @@ cp -r "${SCRIPT_DIR}/qds" "${INSTALL_DIR}/"
 find "${INSTALL_DIR}/qds" -type d -exec chmod 755 {} \;
 find "${INSTALL_DIR}/qds" -type f -exec chmod 644 {} \;
 install -Dm755 "${SCRIPT_DIR}/${APP_NAME}.sh" "${INSTALL_DIR}/${APP_NAME}.sh"
+install -Dm755 "${SCRIPT_DIR}/uninstall.sh" "${INSTALL_DIR}/uninstall.sh"
 install -Dm644 "${SCRIPT_DIR}/README.md" "${INSTALL_DIR}/README.md" 2>/dev/null || true
 install -Dm644 "${SCRIPT_DIR}/LICENSE" "${INSTALL_DIR}/LICENSE" 2>/dev/null || true
 
