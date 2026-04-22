@@ -23,7 +23,7 @@ else
     SHARE_DIR="${HOME}/.local/share/${APP_NAME}"
 fi
 
-pkill -f "quick-dns-switcher" 2>/dev/null || true
+pkill -u "${SUDO_USER:-${USER:-$(id -un)}}" -f "qds.main" 2>/dev/null || true
 
 echo "Uninstalling ${APP_NAME} (${MODE})..."
 
