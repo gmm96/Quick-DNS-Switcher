@@ -94,11 +94,12 @@ Install [Quick DNS Switcher from AUR](https://aur.archlinux.org/packages/quick-d
 
 
 ## Configuration
-DNS providers are configured in [qds/resources/config/dns_providers.json](qds/resources/config/dns_providers.json). Providers have next format in configuration file:
+DNS providers are configured in ```dns_providers.json```. Providers must follow next format in configuration file:
 
 ```json
 {
-    "Provider Name": {
+    "Provider Name":
+    {
         "ipv4_1": "primary_ipv4_address",
         "ipv4_2": "secondary_ipv4_address", 
         "ipv6_1": "primary_ipv6_address",
