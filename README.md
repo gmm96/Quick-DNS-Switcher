@@ -9,14 +9,16 @@
 A lightweight system tray application that allows you to **quickly switch between configured DNS providers** with just two clicks.
 Built with PyQt6, it supports both IPv4 and IPv6 DNS servers and runs on GNU/Linux platforms with NetworkManager as network configuration tool suite.
 
-![Menu](src/resources/docs/screenshots/menu.png)
+![Menu](qds/resources/docs/screenshots/menu.png)
 
 
 ## Features
 - **Quick DNS switching**: Change your DNS settings in just 2 clicks from the system tray.
-- **IPv4 & IPv6 support**: Full dual-stack compatibility
+- **No root needed**: App can be installed as user/system application and does not require root permissions to work. 
+- **All interfaces at once**: DNS changes will be applied to all real network interfaces (WiFi and Ethernet). 
+- **IPv4 & IPv6 support**: Full dual-stack compatibility.
 - **Real-time Monitoring**: Automatically detects network changes and updates DNS status.
-- **System Tray Integration**: Runs silently in the background with minimal resource usage.
+- **System Tray Integration**: Runs silently in background with minimal resource usage.
 - **Cross-Platform**: Supports Linux (via NetworkManager).
 - **Notifications**: Desktop notifications when DNS settings change.
 - **Multiple DNS providers**: Pre-configured with 7 popular DNS providers:
@@ -37,29 +39,62 @@ Built with PyQt6, it supports both IPv4 and IPv6 DNS servers and runs on GNU/Lin
 
 ### Python Dependencies
 - PyQt6
+- python-dbus
 
 
 ## Installation
 
+### From AUR
+
+Install [Quick DNS Switcher from AUR](https://aur.archlinux.org/packages/quick-dns-switcher):
+
+   ```bash
+   yay -S quick-dns-switcher
+   ```
+
+
 ### From Source
 
-1. **Clone the repository**:
+1. **Clone repository**:
    ```bash
    git clone https://github.com/gmm96/Quick-DNS-Switcher.git
    cd Quick-DNS-Switcher
    ```
-2. **Install dependencies**:
-    ```bash
-    pip install PyQt6
+
+2. **Run installation script**:
+    - As system application. Required dependencies will be installed if needed.
+        ```bash
+        sudo bash install.sh
+        ```
+    - As user application. Required dependencies must be installed manually before.
+        ```bash
+        bash install.sh
+        ```
+
+
+
+## Uninstall
+
+### From AUR
+   ```bash
+   yay -R quick-dns-switcher
    ```
-3. **Run the application**:
+
+### From Source
+- As system application.
     ```bash
-    python3 src/main.py
+    sudo bash /opt/quick-dns-switcher/uninstall.sh
+    ```
+- As user application.
+    ```bash
+    bash ~/.local/opt/quick-dns-switcher/uninstall.sh
     ```
 
 
+
+
 ## Configuration
-DNS providers are configured in [src/resources/config/dns_providers.json](src/resources/config/dns_providers.json). Providers have next format in configuration file:
+DNS providers are configured in [qds/resources/config/dns_providers.json](qds/resources/config/dns_providers.json). Providers have next format in configuration file:
 
 ```json
 {
@@ -68,22 +103,19 @@ DNS providers are configured in [src/resources/config/dns_providers.json](src/re
         "ipv4_2": "secondary_ipv4_address", 
         "ipv6_1": "primary_ipv6_address",
         "ipv6_2": "secondary_ipv6_address",
-        "icon": "icon_filename.svg",
-        "icon_from_theme": false
+        "icon": "icon_name"
     }
 }
 ```
 
-Icon field value can be icon name from your system theme or an SVG/PNG file.
-
-If you choose an SVG/PNG file, it should placed in [src/resources/assets/icons](src/resources/assets/icons) directory. Then, fill provider variable ```icon``` with its filename (just filename with extension, no path) and adjust ```icon_from_theme``` variable in configuration file.
+Icon field must be a icon name from your system theme.
 
 
 ### Adding a custom DNS provider:
 
 - Right click on app icon in system tray.
-- Select ```Edit DNS providers``` from the context menu to open configuration file [src/resources/config/dns_providers.json](src/resources/config/dns_providers.json).
-- Add a new entry following the format above and save the file.
+- Select ```Edit DNS providers``` from context menu to open configuration file.
+- Add a new entry following the format above and save.
 - Restart application using ```Restart``` app menu option.
 - Your custom provider will now appear in the menu.
 
@@ -102,11 +134,11 @@ This project is licensed under the GNU General Public License v3.0. See the [LIC
 
 ## Screenshots
 
-![Menu](src/resources/docs/screenshots/menu.png)
+![Menu](qds/resources/docs/screenshots/menu.png)
 
-![Notification](src/resources/docs/screenshots/notification.png)
+![Notification](qds/resources/docs/screenshots/notification.png)
 
-![Tooltip](src/resources/docs/screenshots/tooltip.png)
+![Tooltip](qds/resources/docs/screenshots/tooltip.png)
 
-![System tray](src/resources/docs/screenshots/tray.png)
+![System tray](qds/resources/docs/screenshots/tray.png)
 
