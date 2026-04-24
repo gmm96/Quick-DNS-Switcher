@@ -122,7 +122,7 @@ class NetworkManagerBackend(NetworkBackendBase):
                     "ipv4.dns", ",".join(v4_ips),
                     "ipv6.dns", ",".join(v6_ips),
                     "ipv4.dns-priority", "-1",
-                    "ipv6.dns-priority", "-1"
+                    "ipv6.dns-priority", "-1",
                     "ipv4.dns-search", "~.",
                     "ipv6.dns-search", "~."
                 ],

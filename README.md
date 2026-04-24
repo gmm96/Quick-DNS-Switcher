@@ -6,14 +6,15 @@
 [![Qt](https://img.shields.io/badge/Qt-PyQt6-orange?style=for-the-badge&logo=qt&logoColor=orange)](https://doc.qt.io/qtforpython-6)
 [![License](https://img.shields.io/badge/license-GPLv3-green?style=for-the-badge&logo=gplv3&logoColor=green)](LICENSE)
 
-A lightweight system tray application that allows you to **quickly switch between configured DNS providers** with just two clicks.
-Built with PyQt6, it supports both IPv4 and IPv6 DNS servers and runs on GNU/Linux platforms with NetworkManager as network configuration tool suite.
+A lightweight system tray application that allows you to **quickly change between configured DNS providers** in just two clicks.
+
+Built with PyQt6, it supports both IPv4 and IPv6 DNS servers and runs without root permissions on GNU/Linux platforms with NetworkManager as network configuration tool suite.
 
 ![Menu](qds/resources/docs/screenshots/menu.png)
 
 
 ## Features
-- **Quick DNS switching**: Change your DNS settings in just 2 clicks from the system tray.
+- **Fast DNS change**: Switch your DNS settings in just 2 clicks from the system tray.
 - **No root needed**: App can be installed as user/system application and does not require root permissions to work. 
 - **All interfaces at once**: DNS changes will be applied to all real network interfaces (WiFi and Ethernet). 
 - **IPv4 & IPv6 support**: Full dual-stack compatibility.
@@ -55,8 +56,11 @@ Install [Quick DNS Switcher from AUR](https://aur.archlinux.org/packages/quick-d
 
 ### From Source
 
-1. **Clone repository**:
-   ```bash
+1. **Download project**:
+
+    It's desirable to download latest release from Github page, but you are free to clone the repository if you want.
+
+    ```bash
    git clone https://github.com/gmm96/Quick-DNS-Switcher.git
    cd Quick-DNS-Switcher
    ```
@@ -84,6 +88,10 @@ Install [Quick DNS Switcher from AUR](https://aur.archlinux.org/packages/quick-d
    ```
 
 ### From Source
+
+> [!CAUTION]
+> Do not use this method if you installed it using AUR!
+
 - As system application.
 
     ```bash
@@ -99,7 +107,7 @@ Install [Quick DNS Switcher from AUR](https://aur.archlinux.org/packages/quick-d
 
 
 ## Configuration
-DNS providers are configured in ```dns_providers.json```. Providers must follow next format in configuration file:
+DNS providers are configured in ```dns_providers.json```.Providers must follow next format in configuration file:
 
 ```json
 {
