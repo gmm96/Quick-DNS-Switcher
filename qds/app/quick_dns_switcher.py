@@ -49,7 +49,7 @@ class QuickDnsSwitcher:
         # UI
         self.app: QApplication = app
         self.app.setDesktopFileName(app_settings.app_name)
-        self.app.setApplicationName(UiConstants.APP_NAME)
+        self.app.setApplicationName(app_settings.app_name)
         self.app.setApplicationDisplayName(UiConstants.APP_NAME)
         self.app.setQuitOnLastWindowClosed(False)
         self._ensure_single_instance()
@@ -86,7 +86,9 @@ class QuickDnsSwitcher:
         QTimer.singleShot(500, UiContext.safe_callback(self._update_state))
 
     def _update_state(self) -> None:
-        network_state: NetworkState = self.network_state_provider.retrieve()
+        network_state: Optional[NetworkState] = self.network_state_provider.retrieve()
+        if not network_state:
+            return
         if self.network_state and self.network_state.matches_state(network_state):
             return
         dns_interpretation: DnsInterpretation = self.dns_interpreter.resolve(network_state)

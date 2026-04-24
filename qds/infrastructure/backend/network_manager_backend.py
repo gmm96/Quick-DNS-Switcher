@@ -9,6 +9,7 @@ from qds.infrastructure.backend.network_backend_base import NetworkBackendBase
 from qds.domain.models.network.ip_pair import IpPair
 from qds.domain.models.network.network_connection import NetworkConnection
 from qds.infrastructure.system.command_executor import CommandExecutor
+from qds.ui.ui_context import UiContext
 
 
 class NetworkManagerBackend(NetworkBackendBase):
@@ -121,7 +122,7 @@ class NetworkManagerBackend(NetworkBackendBase):
                     "ipv4.dns", ",".join(v4_ips),
                     "ipv6.dns", ",".join(v6_ips),
                     "ipv4.dns-priority", "-1",
-                    "ipv6.dns-priority", "-1",
+                    "ipv6.dns-priority", "-1"
                     "ipv4.dns-search", "~.",
                     "ipv6.dns-search", "~."
                 ],
@@ -129,5 +130,6 @@ class NetworkManagerBackend(NetworkBackendBase):
             )
             result_reapply: CompletedProcess = CommandExecutor.execute(["nmcli", "device", "reapply", conn.device], check=False)
             if result_reapply.returncode != 0:
+                UiContext.qt_sleep(500)
                 logging.warning("Error resetting infrastructure, trying aggressive method...", stack_info=True)
                 CommandExecutor.execute(["nmcli", "connection", "up", conn.name], check=True)
