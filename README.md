@@ -63,10 +63,13 @@ Install [Quick DNS Switcher from AUR](https://aur.archlinux.org/packages/quick-d
 
 2. **Run installation script**:
     - As system application. Required dependencies will be installed if needed.
+
         ```bash
         sudo bash install.sh
         ```
+
     - As user application. Required dependencies must be installed manually before.
+
         ```bash
         bash install.sh
         ```
@@ -82,14 +85,16 @@ Install [Quick DNS Switcher from AUR](https://aur.archlinux.org/packages/quick-d
 
 ### From Source
 - As system application.
+
     ```bash
     sudo bash /opt/quick-dns-switcher/uninstall.sh
     ```
+
 - As user application.
+
     ```bash
     bash ~/.local/opt/quick-dns-switcher/uninstall.sh
     ```
-
 
 
 
@@ -142,4 +147,3 @@ This project is licensed under the GNU General Public License v3.0. See the [LIC
 ![Tooltip](qds/resources/docs/screenshots/tooltip.png)
 
 ![System tray](qds/resources/docs/screenshots/tray.png)
-

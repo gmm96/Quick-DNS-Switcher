@@ -15,12 +15,12 @@ class NetworkStateProvider:
         self.backend: NetworkBackendBase = backend
         self.system_dns_reader: SystemDnsReaderBase = system_dns_reader
 
-    def retrieve(self) -> NetworkState:
+    def retrieve(self) -> Optional[NetworkState]:
         connections: List[NetworkConnection] = self.backend.get_active_connections()
         network_config: NetworkConfiguration = self._get_network_config_from_connections(connections)
         system_dns_config: Optional[ResolvedDns] = self.system_dns_reader.read(network_config.ipv4_enabled, network_config.ipv6_enabled)
         if not system_dns_config:
-            raise Exception
+            return None
         return NetworkState(network_config, system_dns_config)
 
     @staticmethod
