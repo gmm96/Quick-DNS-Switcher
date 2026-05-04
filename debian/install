@@ -1,0 +1,11 @@
+qds opt/quick-dns-switcher/
+quick-dns-switcher.sh opt/quick-dns-switcher/
+README.md opt/quick-dns-switcher/
+LICENSE opt/quick-dns-switcher/
+
+qds/resources/config/dns_providers.json usr/share/quick-dns-switcher/
+
+qds/resources/assets/quick-dns-switcher.desktop usr/share/applications/
+qds/resources/assets/quick-dns-switcher.desktop etc/xdg/autostart/
+
+qds/resources/assets/icons/*.svg usr/share/icons/hicolor/scalable/apps/
