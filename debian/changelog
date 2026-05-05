@@ -1,6 +1,0 @@
-quick-dns-switcher (1.0.4-1) unstable; urgency=high
-
-  * Initial release in Launchpad.
-  * Fix important bug in backend.
-
- -- gmeme <guille0596@gmail.com>  Mon, 04 May 2026 21:04:11 +0200

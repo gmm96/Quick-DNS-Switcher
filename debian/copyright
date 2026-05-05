@@ -1,7 +1,0 @@
-Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: quick-dns-switcher
-Source: https://github.com/gmm96/Quick-DNS-Switcher
-
-Files: *
-Copyright: 2026 gmm96
-License: GPL-3.0
