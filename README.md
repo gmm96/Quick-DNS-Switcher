@@ -135,11 +135,10 @@ Icon field must be a icon name from your system theme.
 
 
 ## Support
-If you encounter any issues or have questions:
-1. Check the troubleshooting section above
-2. Search existing issues on GitHub
-3. Create a new issue with detailed information about your problem
-4. Include your operating system, Python version, and any error messages
+Any issues? Questions?
+1. Read this document.
+2. Search existing issues.
+3. Create a new issue with detailed info (include details like OS version, Python version, error messages, etc.).
 
 
 ## License

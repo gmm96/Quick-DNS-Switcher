@@ -131,7 +131,7 @@ if command -v gtk-update-icon-cache >/dev/null 2>&1;
 then
     if [[ "${MODE}" == "system" ]];
     then
-        gtk-update-icon-cache -f -t /usr/share/icons/hicolor || true
+        gtk-update-icon-cache -f -t "/usr/share/icons/hicolor" || true
     else
         gtk-update-icon-cache -f -t "${HOME}/.local/share/icons/hicolor" || true
     fi
